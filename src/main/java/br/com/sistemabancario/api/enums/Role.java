@@ -3,8 +3,7 @@ package br.com.sistemabancario.api.enums;
 public enum Role {
    
    ADMIN("admin"),
-
-   CORRENTISTA("correntista");
+   OPERADOR("operador");
     
 
    String role; 
