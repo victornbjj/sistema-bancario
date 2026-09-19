@@ -55,25 +55,11 @@ classDiagram
         POUPANCA
     }
 
-    class Usuario {
-        +Long id
-        +String username
-        +String senhaHash
-        +Role role
-    }
-
-    class Role {
-        <<enumeration>>
-        ADMIN
-        OPERADOR
-    }
-
     Correntista "1" --> "0..*" Conta : possui
     Conta <|-- ContaCorrente
     Conta <|-- ContaPoupanca
     Conta "1" --> "0..*" Transacao : origina
     Transacao --> TipoTransacao
-    Usuario --> Role
 ```
 
 ## 2. Descrição das Entidades
@@ -108,17 +94,12 @@ Registro imutável de uma movimentação financeira.
 - `id`, `tipo` (enum `TipoTransacao`), `valor`, `data`
 - `conta`: referência à conta de origem (obrigatória, não nula)
 
-### Usuario (suporte à autenticação JWT)
-- `id`, `username`, `senhaHash` (BCrypt), `role`
-- Usado apenas para autenticação/autorização dos endpoints — não se confunde com `Correntista` (que é o cliente da cooperativa)
-
 ## 3. Enums
 
 | Enum | Valores | Uso |
 |------|---------|-----|
 | `TipoConta` | `CORRENTE`, `POUPANCA` | Discriminação da subclasse (estratégia de herança JPA) |
 | `TipoTransacao` | `DEPOSITO`, `SAQUE`, `RENDIMENTO`, `JUROS` | Categoriza a transação registrada |
-| `Role` | `ADMIN`, `OPERADOR` | Controle de acesso (RBAC simples) para os endpoints |
 
 ## 4. Decisões de Modelagem (OO)
 
