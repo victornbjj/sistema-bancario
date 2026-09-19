@@ -84,7 +84,9 @@ Todos os erros devem seguir o mesmo formato:
 - Criar projeto Spring Boot com Java 8+ e dependencias Web, Validation, JPA, Flyway, MySQL, H2 e OpenAPI.
 - Definir pacotes conforme a arquitetura: `controller`, `service`, `database.entity`, `database.repository`, `dto`, `enums`.
 - Configurar perfis `test` e `dev`.
-- Adicionar `Dockerfile`, `docker-compose.yml`, `.gitignore` e pipeline minima de build/teste.
+- Adicionar `Dockerfile`, `docker-compose.yml` e `.gitignore`.
+- Documentar a validacao local com Maven e Docker Compose. A entrega nao depende de GitHub Actions,
+  pipelines de CI/CD ou Git Flow.
 
 **Validacao de saida**
 
@@ -200,7 +202,7 @@ Todos os erros devem seguir o mesmo formato:
 
 - Finalizar README com pre-requisitos, configuracao, migrations, Docker, exemplos curl.
 - Criar testes de ponta a ponta do fluxo: correntista -> conta -> deposito -> saque -> extrato.
-- Executar build, testes, verificacao de migration e subida via Docker.
+- Executar localmente o build, os testes, a verificacao de migration e a subida via Docker.
 - Revisar requisitos RF01-RF13 e RNF01-RNF11 com rastreabilidade.
 
 **Validacao de saida**
@@ -211,6 +213,27 @@ Todos os erros devem seguir o mesmo formato:
 - Regras de corrente, poupanca, rendimento e juros possuem evidencia automatizada.
 - README permite que outra pessoa execute e consuma a API sem conhecimento adicional.
 - Checklist de aceite marca cada RF/RNF como implementado, testado ou explicitamente fora do escopo.
+
+### Validacao local obrigatoria
+
+Todos os criterios acima podem ser verificados sem pipeline remoto:
+
+```bash
+# Windows
+.\mvnw.cmd clean verify
+docker compose up --build
+```
+
+Em outro terminal, validar a aplicacao com os exemplos de requisicao documentados e,
+ao finalizar:
+
+```bash
+docker compose down
+```
+
+O resultado desses comandos, junto dos testes do projeto, e suficiente para demonstrar a
+execucao do desafio. O uso de branches, Git Flow, pull requests ou GitHub Actions e
+opcional e nao faz parte dos criterios de aceite.
 
 ## 5. Ordem recomendada de execucao
 
@@ -223,7 +246,9 @@ Todos os erros devem seguir o mesmo formato:
 7. Marco 6: erros e documentacao.
 8. Marco 7: aceite final e empacotamento.
 
-Cada marco deve ser entregue em commits pequenos, com testes incluidos no mesmo incremento. O proximo marco nao deve comecar enquanto a validacao do marco anterior estiver falhando.
+Cada marco deve ser validado localmente antes do proximo. Commits incrementais podem ser
+usados para organizar o historico, mas nao sao obrigatorios para executar ou avaliar o
+desafio.
 
 ## 6. Riscos e pontos de atencao
 
