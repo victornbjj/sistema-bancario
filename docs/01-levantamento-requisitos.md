@@ -20,8 +20,7 @@ Sistema RESTful para gerenciamento de correntistas, contas bancárias (corrente 
 | RF10 | Um correntista pode possuir várias contas | Obrigatório |
 | RF11 | O sistema deve permitir aplicar rendimento mensal em Conta Poupança, com taxa informada por parâmetro, atualizando saldo e registrando transação | Diferencial |
 | RF12 | O sistema deve permitir aplicar juros sobre saldo negativo de Conta Corrente, com taxa informada por parâmetro, atualizando saldo e registrando transação | Diferencial |
-| RF13 | O sistema deve autenticar usuários via login e emitir token JWT para acesso aos endpoints protegidos | Adicional (decisão do candidato) |
-| RF14 | O sistema deve documentar a API via Swagger/OpenAPI | Diferencial |
+| RF13 | O sistema deve documentar a API via Swagger/OpenAPI | Diferencial |
 
 ## 3. Requisitos Não Funcionais (RNF)
 
@@ -32,13 +31,12 @@ Sistema RESTful para gerenciamento de correntistas, contas bancárias (corrente 
 | RNF03 | Banco de dados relacional: MySQL (produção/dev) ou H2 (testes) |
 | RNF04 | Versionamento de schema via migrations (Flyway), em `resources/db/migration` |
 | RNF05 | Ambiente de execução conteinerizado via Docker/Docker Compose (app + MySQL) |
-| RNF06 | Autenticação e autorização via Spring Security + JWT |
-| RNF07 | API deve seguir convenções REST: verbos HTTP corretos e códigos de status adequados |
-| RNF08 | Tratamento de erros padronizado (GlobalExceptionHandler, respostas de erro consistentes) |
-| RNF09 | Código organizado em camadas: Controller, Service, Repository, DTO, Entity |
-| RNF10 | Repositório Git público com histórico de commits incrementais |
-| RNF11 | README com instruções de execução local, script SQL/migration e exemplos de requisições |
-| RNF12 | Testes unitários cobrindo regras de saque, depósito e cálculo de rendimento/juros (diferencial) |
+| RNF06 | API deve seguir convenções REST: verbos HTTP corretos e códigos de status adequados |
+| RNF07 | Tratamento de erros padronizado (GlobalExceptionHandler, respostas de erro consistentes) |
+| RNF08 | Código organizado em camadas: Controller, Service, Repository, DTO, Entity |
+| RNF09 | Repositório Git público com histórico de commits incrementais |
+| RNF10 | README com instruções de execução local, script SQL/migration e exemplos de requisições |
+| RNF11 | Testes unitários cobrindo regras de saque, depósito e cálculo de rendimento/juros (diferencial) |
 
 ## 4. Regras de Negócio (RN)
 
@@ -66,7 +64,6 @@ Sistema RESTful para gerenciamento de correntistas, contas bancárias (corrente 
 - `GET /contas/{id}/transacoes` — extrato da conta
 - `POST /contas/{id}/rendimento` — aplicar rendimento (poupança, diferencial)
 - `POST /contas/{id}/juros` — aplicar juros (corrente, diferencial)
-- `POST /auth/login` — autenticação e emissão de JWT
 
 ## 6. Fora de Escopo
 

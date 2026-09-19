@@ -10,7 +10,6 @@ erDiagram
     CONTA ||--o{ TRANSACAO : origina
     CONTA ||--o| CONTA_CORRENTE : especializa
     CONTA ||--o| CONTA_POUPANCA : especializa
-    USUARIO }o--|| ROLE : possui
 
     CORRENTISTA {
         bigint id PK
@@ -47,12 +46,6 @@ erDiagram
         bigint conta_id FK
     }
 
-    USUARIO {
-        bigint id PK
-        varchar username UK
-        varchar senha_hash
-        varchar role
-    }
 ```
 
 ## 2. Definição das Tabelas
@@ -97,14 +90,6 @@ erDiagram
 | data | DATETIME | NOT NULL, default CURRENT_TIMESTAMP |
 | conta_id | BIGINT | NOT NULL, FK → conta(id) |
 
-### `usuario` (suporte à autenticação JWT)
-| Coluna | Tipo | Restrições |
-|--------|------|------------|
-| id | BIGINT | PK, AUTO_INCREMENT |
-| username | VARCHAR(60) | NOT NULL, UNIQUE |
-| senha_hash | VARCHAR(255) | NOT NULL |
-| role | VARCHAR(20) | NOT NULL (`ADMIN`, `OPERADOR`) |
-
 ## 3. Script de Migration (Flyway) — `V1__create_schema.sql`
 
 ```sql
@@ -147,17 +132,11 @@ CREATE TABLE transacao (
     CONSTRAINT fk_transacao_conta FOREIGN KEY (conta_id) REFERENCES conta(id)
 );
 
-CREATE TABLE usuario (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(60) NOT NULL UNIQUE,
-    senha_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL
-);
 ```
 
 ## 4. Observações
 
 - `numero` da conta pode ser gerado pela aplicação (ex.: sequencial + dígito verificador) no Service, não no banco.
-- Índices únicos em `correntista.documento`, `conta.numero` e `usuario.username` já garantem RN09/RN10 a nível de banco.
+- Índices únicos em `correntista.documento` e `conta.numero` já garantem RN09/RN10 a nível de banco.
 - Caso opte por **SINGLE_TABLE** em vez de JOINED (uma única tabela `conta` com coluna `limite` nula para poupança), simplifica-se a query mas perde-se a garantia de "limite não existe para poupança" a nível de schema — trade-off a citar no README.
 - Para H2 (testes), o mesmo script Flyway roda sem alteração, bastando trocar o dialect no `application-test.yml`.
