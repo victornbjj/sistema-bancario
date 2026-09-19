@@ -37,9 +37,3 @@ CREATE TABLE transacao (
     CONSTRAINT fk_transacao_conta FOREIGN KEY (conta_id) REFERENCES conta(id)
 );
 
-CREATE TABLE usuario (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(60) NOT NULL UNIQUE,
-    senha_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL
-);
