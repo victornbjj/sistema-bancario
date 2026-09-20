@@ -68,7 +68,7 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: conta_bancaria
+      MYSQL_DATABASE: sistema_bancario
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
@@ -85,7 +85,7 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/conta_bancaria
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/sistema_bancario
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
     ports:

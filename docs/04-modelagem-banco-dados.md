@@ -56,8 +56,8 @@ erDiagram
 | id | BIGINT | PK, AUTO_INCREMENT |
 | nome | VARCHAR(150) | NOT NULL |
 | documento | VARCHAR(20) | NOT NULL, UNIQUE |
-| email | VARCHAR(150) | NULL |
-| telefone | VARCHAR(20) | NULL |
+| email | VARCHAR(150) | NULL, UNIQUE quando informado |
+| telefone | VARCHAR(20) | NULL, UNIQUE quando informado |
 | data_cadastro | DATETIME | NOT NULL, default CURRENT_TIMESTAMP |
 
 ### `conta` (tabela base — atributos comuns)
@@ -97,8 +97,8 @@ CREATE TABLE correntista (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     documento VARCHAR(20) NOT NULL UNIQUE,
-    email VARCHAR(150),
-    telefone VARCHAR(20),
+    email VARCHAR(150) UNIQUE,
+    telefone VARCHAR(20) UNIQUE,
     data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

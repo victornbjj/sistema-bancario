@@ -69,7 +69,7 @@ Representa o cliente da cooperativa.
 - `id`: identificador único
 - `nome`: nome completo (obrigatório)
 - `documento`: CPF ou CNPJ (obrigatório, único)
-- `email`, `telefone`: dados de contato
+- `email`, `telefone`: dados de contato opcionais; quando informados, devem ser únicos entre os correntistas
 - `dataCadastro`: preenchida automaticamente
 - Relacionamento: 1 Correntista → N Contas
 

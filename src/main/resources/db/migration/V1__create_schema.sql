@@ -2,8 +2,8 @@ CREATE TABLE correntista (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     documento VARCHAR(20) NOT NULL UNIQUE,
-    email VARCHAR(150),
-    telefone VARCHAR(20),
+    email VARCHAR(150) UNIQUE,
+    telefone VARCHAR(20) UNIQUE,
     data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -36,4 +36,3 @@ CREATE TABLE transacao (
     conta_id BIGINT NOT NULL,
     CONSTRAINT fk_transacao_conta FOREIGN KEY (conta_id) REFERENCES conta(id)
 );
-

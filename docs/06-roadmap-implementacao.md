@@ -23,6 +23,9 @@ A implementacao deve preservar as regras dos documentos 01 a 05 e ser entregue e
 | Metodo | Endpoint | Entrada | Saida | Erros principais |
 |---|---|---|---|---|
 | POST | `/api/v1/correntistas` | `{ nome, documento, email?, telefone? }` | `201` com recurso criado e `Location` | `400`, `409` |
+
+Os campos `email` e `telefone` são opcionais. Quando informados, devem ser
+únicos entre os correntistas; valores `NULL` continuam permitidos.
 | GET | `/api/v1/correntistas` | filtros opcionais `documento`, `page`, `size` | `200` paginado | `400` |
 | GET | `/api/v1/correntistas/{id}` | - | `200` | `404` |
 
