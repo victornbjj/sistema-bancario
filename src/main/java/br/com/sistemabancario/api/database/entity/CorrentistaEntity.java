@@ -35,8 +35,10 @@ public class CorrentistaEntity {
     @Column(nullable = false, unique = true)
     private String documento;
 
+    @Column(unique = true)
     private String email;
 
+    @Column(unique = true)
     private String telefone;
 
     @Column(name = "data_cadastro")
