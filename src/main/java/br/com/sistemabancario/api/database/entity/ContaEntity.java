@@ -58,9 +58,17 @@ public abstract class ContaEntity {
         }
     }
 
-    public abstract Boolean sacar(BigDecimal valor);
+    public abstract TransacaoEntity sacar(BigDecimal valor);
 
-    public abstract void depositar(BigDecimal valor);
+    public abstract TransacaoEntity depositar(BigDecimal valor);
+
+    protected void diminuirSaldo(BigDecimal valor){
+        saldo = saldo.subtract(valor);
+    }
+
+    protected  void adicionarValor(BigDecimal valor){
+        saldo = saldo.add(valor);
+    }
 
     public Long getId() {
         return id;
@@ -94,6 +102,7 @@ public abstract class ContaEntity {
         this.numero = numero;
     }
 
+
     public void setTipo(TipoConta tipo) {
         this.tipo = tipo;
     }
@@ -104,6 +113,10 @@ public abstract class ContaEntity {
 
     public void setCorrentista(CorrentistaEntity correntista) {
         this.correntista = correntista;
+    }
+
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo;
     }
 
 };

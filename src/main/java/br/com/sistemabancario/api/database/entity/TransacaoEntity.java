@@ -18,11 +18,13 @@ import javax.persistence.Table;
 
 import br.com.sistemabancario.api.enums.TipoTransacao;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Builder 
 @Table(name = "transacao")
 @AllArgsConstructor
 @NoArgsConstructor
