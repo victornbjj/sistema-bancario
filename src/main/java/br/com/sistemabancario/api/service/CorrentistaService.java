@@ -4,8 +4,8 @@ import br.com.sistemabancario.api.database.entity.CorrentistaEntity;
 import br.com.sistemabancario.api.database.repository.ICorrentistaRepository;
 import br.com.sistemabancario.api.dto.CorrentistaRequest;
 import br.com.sistemabancario.api.dto.CorrentistaResponse;
-import br.com.sistemabancario.api.exception.BusinessException;
-import br.com.sistemabancario.api.exception.ResourceNotFoundException;
+import br.com.sistemabancario.api.exception.RecursoNaoEncontradoException;
+import br.com.sistemabancario.api.exception.RegistroDuplicadoException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import javax.transaction.Transactional;
 @Service
 public class CorrentistaService {
 
-    ICorrentistaRepository repository;
+    private final ICorrentistaRepository repository;
 
     public CorrentistaService(ICorrentistaRepository repository) {
         this.repository = repository;
@@ -29,15 +29,15 @@ public class CorrentistaService {
         String telefone = normalizarOpcional(request.getTelefone());
 
         if (repository.existsByDocumento(documento)) {
-            throw new BusinessException("Documento já cadastrado");
+            throw RegistroDuplicadoException.documento(documento);
         }
 
         if (email != null && repository.existsByEmail(email)) {
-            throw new BusinessException("Email já cadastrado");
+            throw RegistroDuplicadoException.email(email);
         }
 
         if (telefone != null && repository.existsByTelefone(telefone)) {
-            throw new BusinessException("Telefone já cadastrado");
+            throw RegistroDuplicadoException.telefone(telefone);
         }
 
         CorrentistaEntity entity = new CorrentistaEntity();
@@ -53,10 +53,10 @@ public class CorrentistaService {
 
     }
 
-    @Transactional
+    @Transactional()
     public CorrentistaResponse buscarPorId(Long id) {
         CorrentistaEntity entity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Corretista não encontrado"));
+                .orElseThrow(() -> RecursoNaoEncontradoException.correntista(id));
 
 
         return converterParaReponse(entity);
