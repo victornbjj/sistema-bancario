@@ -1,0 +1,10 @@
+stages: 
+  - validate
+
+
+validate:
+  stage: validate
+  image : maven:3.9-eclipse-temurin-8
+ 
+  script:
+   - mvn clean validate
