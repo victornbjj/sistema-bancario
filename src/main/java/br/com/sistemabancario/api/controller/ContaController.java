@@ -5,6 +5,7 @@ import java.net.URI;
 
 import javax.validation.Valid;
 
+import br.com.sistemabancario.api.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,11 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import br.com.sistemabancario.api.dto.ContaRequest;
-import br.com.sistemabancario.api.dto.ContaResponse;
-import br.com.sistemabancario.api.dto.JurosRequest;
-import br.com.sistemabancario.api.dto.RendimentoRequest;
-import br.com.sistemabancario.api.dto.TransacaoResponse;
 import br.com.sistemabancario.api.service.ContaService;
 
 
@@ -37,8 +33,8 @@ public class ContaController {
 
 
 
-@PostMapping
-public ResponseEntity<ContaResponse> criarConta(@Valid @RequestBody ContaRequest request) {
+    @PostMapping
+    public ResponseEntity<ContaResponse> criarConta(@Valid @RequestBody ContaRequest request) {
     ContaResponse response = service.criarConta(request);
 
     URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -47,11 +43,23 @@ public ResponseEntity<ContaResponse> criarConta(@Valid @RequestBody ContaRequest
             .toUri();
 
     return ResponseEntity.created(location).body(response);
-}
+    }
+
+    @PostMapping("/{id}/depositos")
+    public ResponseEntity<TransacaoResponse> depositar(@PathVariable Long id, @Valid @RequestBody DepositoRequest request) {
+        TransacaoResponse resposta = service.depositar(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
+    }
+
+    @PostMapping("/{id}/saques")
+    public ResponseEntity<TransacaoResponse> sacar(@PathVariable Long id, @Valid @RequestBody SaqueRequest request) {
+        TransacaoResponse resposta = service.sacar(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
+    }
 
 
-@PostMapping("/{id}/rendimento")
-public ResponseEntity<TransacaoResponse> aplicarRendimento(
+   @PostMapping("/{id}/rendimento")
+   public ResponseEntity<TransacaoResponse> aplicarRendimento(
         @PathVariable Long id,
         @RequestParam(required = false) BigDecimal taxa,
         @RequestBody (required = false) RendimentoRequest body) {
@@ -65,14 +73,15 @@ public ResponseEntity<TransacaoResponse> aplicarRendimento(
          taxaFinal = body.getTaxa();}
         else {
           taxaFinal = null;}
-}
+
+      }
 
     TransacaoResponse resposta = service.aplicarRendimento(id, taxaFinal);
     return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
-}
+   }
 
-@PostMapping ("/{id}/juros")
-public ResponseEntity<TransacaoResponse> aplicarJuros(
+   @PostMapping ("/{id}/juros")
+   public ResponseEntity<TransacaoResponse> aplicarJuros(
         @PathVariable Long id,
         @RequestParam(required = false) BigDecimal taxa,
         @RequestBody (required = false) JurosRequest body) {
@@ -91,7 +100,7 @@ public ResponseEntity<TransacaoResponse> aplicarJuros(
 
     TransacaoResponse resposta = service.aplicarJuros(id, taxaFinal);
     return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
-}
+   }
 
 
 }

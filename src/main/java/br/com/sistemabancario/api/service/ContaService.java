@@ -5,6 +5,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import javax.transaction.Transactional;
 
+import br.com.sistemabancario.api.dto.*;
+import br.com.sistemabancario.api.enums.TipoTransacao;
 import org.springframework.stereotype.Service;
 
 import br.com.sistemabancario.api.database.entity.ContaCorrente;
@@ -15,10 +17,6 @@ import br.com.sistemabancario.api.database.entity.TransacaoEntity;
 import br.com.sistemabancario.api.database.repository.IContaRepository;
 import br.com.sistemabancario.api.database.repository.ICorrentistaRepository;
 import br.com.sistemabancario.api.database.repository.ITransacaoRepository;
-import br.com.sistemabancario.api.dto.ContaRequest;
-import br.com.sistemabancario.api.dto.ContaResponse;
-import br.com.sistemabancario.api.dto.CorrentistaResponse;
-import br.com.sistemabancario.api.dto.TransacaoResponse;
 import br.com.sistemabancario.api.enums.TipoConta;
 import br.com.sistemabancario.api.exception.RecursoNaoEncontradoException;
 import br.com.sistemabancario.api.exception.TipoContaInvalidoException;
@@ -94,8 +92,46 @@ public class ContaService {
             .titular(titular)
             .build();
 
-     }
-     
+    }
+
+
+    @Transactional
+    public TransacaoResponse depositar(Long idCOnta, DepositoRequest request){
+        ContaEntity conta = contaRepository.findById(idCOnta)
+                .orElseThrow(()-> RecursoNaoEncontradoException.conta(idCOnta));
+
+        TransacaoEntity transacao = conta.depositar(request.getValor());
+        transacaoRepository.save(transacao);
+
+        return TransacaoResponse.builder()
+                .id(transacao.getId())
+                .tipoTransacao(TipoTransacao.DEPOSITO)
+                .valor(transacao.getValor())
+                .data(transacao.getData())
+                .contaId(conta.getId())
+                .saldoAtual(conta.getSaldo())
+                .build();
+    }
+
+    @Transactional
+    public TransacaoResponse sacar(Long idCOnta, SaqueRequest request){
+        ContaEntity conta = contaRepository.findById(idCOnta)
+                .orElseThrow(()-> RecursoNaoEncontradoException.conta(idCOnta));
+
+        TransacaoEntity transacao = conta.sacar(request.getValor());
+        transacaoRepository.save(transacao);
+
+        return TransacaoResponse.builder()
+                .id(transacao.getId())
+                .tipoTransacao(TipoTransacao.SAQUE)
+                .valor(transacao.getValor())
+                .data(transacao.getData())
+                .contaId(conta.getId())
+                .saldoAtual(conta.getSaldo())
+                .build();
+    }
+
+
     @Transactional
     public TransacaoResponse aplicarRendimento(Long Id, BigDecimal taxa){
         ContaEntity conta = contaRepository.findById(Id)
@@ -117,6 +153,7 @@ public class ContaService {
         .valor(transacao.getValor())
         .data(transacao.getData())
         .contaId(conta.getId())
+        .saldoAtual(conta.getSaldo())
         .build();
        
     }
@@ -140,6 +177,7 @@ public class ContaService {
             .valor(transacao.getValor())
             .data(transacao.getData())
             .contaId(corrente.getId())
+            .saldoAtual(conta.getSaldo())
             .build();
 
     }

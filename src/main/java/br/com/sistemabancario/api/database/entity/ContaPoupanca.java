@@ -40,7 +40,7 @@ public class ContaPoupanca extends ContaEntity{
 
     @Override
     public TransacaoEntity depositar(BigDecimal valor) {
-       if(valor == null || valor.compareTo(BigDecimal.ZERO) > 0){
+       if(valor == null || valor.compareTo(BigDecimal.ZERO) <= 0){
         throw new ValorInvalidoException("Valor depositado não deve ser nullo ouser menor que zero");
        }
        
@@ -67,7 +67,9 @@ public class ContaPoupanca extends ContaEntity{
         BigDecimal rendimento  = this.getSaldo()
         .multiply(taxa)
         .setScale(2, RoundingMode.HALF_EVEN);
-        
+
+        this.adicionarValor(rendimento);
+
         return  TransacaoEntity.builder()
                 .tipo(TipoTransacao.RENDIMENTO)
                 .valor(rendimento)

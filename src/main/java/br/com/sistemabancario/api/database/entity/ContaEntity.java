@@ -115,8 +115,6 @@ public abstract class ContaEntity {
         this.correntista = correntista;
     }
 
-    public void setSaldo(BigDecimal saldo) {
-        this.saldo = saldo;
-    }
+
 
 };

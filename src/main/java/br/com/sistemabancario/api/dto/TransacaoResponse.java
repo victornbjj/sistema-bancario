@@ -20,4 +20,5 @@ public class TransacaoResponse {
     private BigDecimal valor; 
     private  LocalDateTime data; 
     private  Long contaId;
+    private BigDecimal saldoAtual;
 }
