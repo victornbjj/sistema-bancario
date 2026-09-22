@@ -17,10 +17,7 @@ public class CorrentistaService {
 
     private final ICorrentistaRepository repository;
 
-    public CorrentistaService(ICorrentistaRepository repository) {
-        this.repository = repository;
-    }
-
+   
 
     @Transactional
     public CorrentistaResponse cadastrar(CorrentistaRequest request) {
@@ -95,4 +92,9 @@ public class CorrentistaService {
                 .dataCadastro(correntistaEntity.getDataCadastro())
                 .build();
     }
+
+     public CorrentistaService(ICorrentistaRepository repository) {
+        this.repository = repository;
+    }
+
 }

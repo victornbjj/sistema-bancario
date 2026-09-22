@@ -2,7 +2,7 @@ package br.com.sistemabancario.api.exception;
 
 import org.springframework.http.HttpStatus;
 
-;
+
 
 public class RequisicaoInvalidaException extends NegocioException {
     
@@ -21,6 +21,11 @@ public class RequisicaoInvalidaException extends NegocioException {
      public static RequisicaoInvalidaException limiteNegativo() {
         return new RequisicaoInvalidaException(
                 "O campo 'limite' não pode ser negativo");
+    }
+
+     public static RequisicaoInvalidaException periodoInvalido() {
+        return new RequisicaoInvalidaException(
+                "O parâmetro 'dataInicial' não pode ser posterior a 'dataFinal'");
     }
 
 

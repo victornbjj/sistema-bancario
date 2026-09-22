@@ -2,7 +2,8 @@ package br.com.sistemabancario.api.exception;
 
 import java.util.stream.Collectors;
 import java.util.List;
-
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,9 @@ import br.com.sistemabancario.api.dto.FieldErrorDTO;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+        
+        // private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
 
         @ExceptionHandler(NegocioException.class)
         public ResponseEntity<ErrorResponseDTO> handleNegocioException(NegocioException ex,
@@ -55,5 +59,19 @@ public class GlobalExceptionHandler {
                                 request.getRequestURI());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
         }
+
+        // @ExceptionHandler(Exception.class)
+        // public ResponseEntity<ErrorResponseDTO> handleUnexpectedException(Exception ex,
+        //                 HttpServletRequest request) {
+        //         log.error("Erro não tratado na requisição {} {}", request.getMethod(), request.getRequestURI(), ex);
+                
+
+        //         ErrorResponseDTO body = ErrorResponseDTO.of(
+        //                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        //                         "Erro interno",
+        //                         "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+        //                         request.getRequestURI());
+        //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        // }
 
 }

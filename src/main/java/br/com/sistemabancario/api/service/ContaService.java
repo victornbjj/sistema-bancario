@@ -1,16 +1,16 @@
 package br.com.sistemabancario.api.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
-import javax.transaction.Transactional;
+import java.util.stream.Collectors;
 
 import br.com.sistemabancario.api.dto.*;
-
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.sistemabancario.api.database.entity.ContaCorrente;
 import br.com.sistemabancario.api.database.entity.ContaEntity;
@@ -26,11 +26,8 @@ import br.com.sistemabancario.api.exception.ValorInvalidoException;
 @Service
 public class ContaService {
 
-   
     private final IContaRepository contaRepository;
     private final ICorrentistaRepository correntistaRepository;
-
-  
 
     @Transactional
     public ContaResponse criarConta(ContaRequest request) {
@@ -38,7 +35,6 @@ public class ContaService {
                 .orElseThrow(() -> RecursoNaoEncontradoException.correntista(request.getCorrentistaId()));
 
         ContaEntity conta;
-      
 
         if (request.getTipo() == TipoConta.CORRENTE) {
             BigDecimal limite = request.getLimite() != null ? request.getLimite() : BigDecimal.ZERO;
@@ -50,7 +46,6 @@ public class ContaService {
             ContaCorrente corrente = new ContaCorrente();
             corrente.setLimite(limite);
             conta = corrente;
-          
 
         } else if (request.getTipo() == TipoConta.POUPANCA) {
             if (request.getLimite() != null && request.getLimite().compareTo(BigDecimal.ZERO) != 0) {
@@ -71,12 +66,7 @@ public class ContaService {
         return montarContaResponse(salva);
     }
 
-   
-
-
-
-   
-
+    @Transactional
     public Page<ContaResponse> listar(Long correntistaId, String numero, Pageable pageable) {
         Page<ContaEntity> contas;
 
@@ -96,15 +86,25 @@ public class ContaService {
         return contas.map(this::montarContaResponse);
     }
 
+    @Transactional
     public ContaResponse buscarPorId(Long id) {
         ContaEntity conta = contaRepository.findById(id)
                 .orElseThrow(() -> RecursoNaoEncontradoException.conta(id));
 
         return montarContaResponse(conta);
-
     }
 
+    @Transactional
+    public List<ContaResponse> listarPorCorrentista(Long correntistaId) {
+        if (!correntistaRepository.existsById(correntistaId)) {
+            throw RecursoNaoEncontradoException.correntista(correntistaId);
+        }
 
+        return contaRepository.findByCorrentistaId(correntistaId)
+                .stream()
+                .map(this::montarContaResponse)
+                .collect(Collectors.toList());
+    }
 
     private ContaResponse montarContaResponse(ContaEntity conta) {
         CorrentistaEntity correntista = conta.getCorrentista();
@@ -139,7 +139,7 @@ public class ContaService {
         return numero;
     }
 
-      public ContaService(IContaRepository contaRepository,
+    public ContaService(IContaRepository contaRepository,
             ICorrentistaRepository correntistaRepository) {
         this.contaRepository = contaRepository;
         this.correntistaRepository = correntistaRepository;
