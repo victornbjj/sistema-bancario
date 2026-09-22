@@ -11,10 +11,8 @@ br.com.edu.uniesp
 │   ├── entitity       → entidades JPA (@Entity)
 │   └── repository     → interfaces Spring Data JPA
 ├── dto                → objetos de entrada/saída da API (Request/Response)
-├── enums              → TipoConta, TipoTransacao, Role
-├── security           → configuração Spring Security, filtro JWT, JwtUtil
-└── service
-    └── auth           → AuthService, UserDetailsService, geração/validação de token
+├── enums              → TipoConta, TipoTransacao
+└── service            → regras de negócio e orquestração de transações
 ```
 
 Fluxo de uma requisição:
@@ -27,29 +25,8 @@ Cliente HTTP → Controller → Service → Repository → Banco de Dados
 - **Service**: contém as regras de negócio (RN01–RN10), orquestra transações (`@Transactional`), lança exceções de negócio.
 - **Repository**: interfaces `JpaRepository<Entity, Long>`, sem lógica além de queries derivadas/JPQL.
 - **DTO**: desacopla o contrato da API do modelo de persistência (ex.: `ContaRequestDTO`, `ContaResponseDTO`, `TransacaoResponseDTO`).
-- **Security**: filtro JWT (`OncePerRequestFilter`) valida o token em cada requisição e popula o `SecurityContext`.
 
-## 2. Camada de Segurança (JWT)
-
-```
-security/
-├── SecurityConfig.java      → configura SecurityFilterChain, libera /auth/**, protege demais rotas
-├── JwtAuthFilter.java       → intercepta requisição, extrai/valida token, seta autenticação
-├── JwtUtil.java             → gera e valida tokens (assinatura, expiração)
-└── UserDetailsServiceImpl.java → carrega Usuario do banco para autenticação
-
-service/auth/
-├── AuthService.java         → login: valida credenciais e retorna token
-```
-
-Fluxo de autenticação:
-1. `POST /auth/login` (endpoint público) → `AuthService` valida usuário/senha (`PasswordEncoder`/BCrypt).
-2. Retorna JWT assinado (contendo `sub`=username, `role`, `exp`).
-3. Requisições subsequentes enviam `Authorization: Bearer <token>`.
-4. `JwtAuthFilter` valida o token em cada request antes de chegar ao Controller.
-5. Endpoints protegidos exigem role `OPERADOR` ou `ADMIN` (`@PreAuthorize` ou configuração por rota).
-
-## 3. Tratamento de Erros
+## 2. Tratamento de Erros
 
 `GlobalExceptionHandler` (`@RestControllerAdvice`) centraliza o mapeamento de exceções de negócio para respostas HTTP padronizadas:
 
@@ -59,8 +36,6 @@ Fluxo de autenticação:
 | `SaldoInsuficienteException` | 422 |
 | `DocumentoJaCadastradoException` | 409 |
 | `MethodArgumentNotValidException` (Bean Validation) | 400 |
-| `AccessDeniedException` | 403 |
-| `BadCredentialsException` | 401 |
 
 Resposta de erro padrão (exemplo):
 ```json
@@ -73,13 +48,13 @@ Resposta de erro padrão (exemplo):
 }
 ```
 
-## 4. Persistência e Migrations
+## 3. Persistência e Migrations
 
 - Spring Data JPA/Hibernate sobre MySQL (produção/dev) ou H2 (perfil de testes).
 - Flyway gerencia versionamento do schema em `resources/db/migration` (`V1__create_schema.sql`, `V2__...`).
 - `spring.jpa.hibernate.ddl-auto=validate` em produção (o schema é fonte de verdade via Flyway, não o Hibernate auto-DDL).
 
-## 5. Containerização (Docker)
+## 4. Containerização (Docker)
 
 ```
 docker-compose.yml
@@ -133,19 +108,17 @@ COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
-## 6. Documentação da API
+## 5. Documentação da API
 
 - SpringDoc OpenAPI (`springdoc-openapi-starter-webmvc-ui`) expõe `/swagger-ui.html` e `/v3/api-docs`.
 - README documenta endpoints, exemplos de payload JSON e passos de execução (`docker compose up`).
 
-## 7. Resumo das Dependências Principais (pom.xml)
+## 6. Resumo das Dependências Principais (pom.xml)
 
 - `spring-boot-starter-web`
 - `spring-boot-starter-data-jpa`
-- `spring-boot-starter-security`
 - `spring-boot-starter-validation`
 - `mysql-connector-j` / `com.h2database:h2` (escopo test)
-- `io.jsonwebtoken:jjwt-api` (+ `jjwt-impl`, `jjwt-jackson`) para JWT
 - `org.flywaydb:flyway-mysql`
 - `org.springdoc:springdoc-openapi-starter-webmvc-ui`
 - `org.projectlombok:lombok`

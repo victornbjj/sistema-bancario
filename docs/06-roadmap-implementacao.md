@@ -2,7 +2,7 @@
 
 ## 1. Objetivo
 
-Construir uma API REST para a cooperativa de credito, cobrindo correntistas, contas corrente/poupanca, movimentacoes, extrato, autenticacao JWT e operacoes financeiras diferenciais.
+Construir uma API REST para a cooperativa de credito, cobrindo correntistas, contas corrente/poupanca, movimentacoes, extrato e operacoes financeiras diferenciais.
 
 A implementacao deve preservar as regras dos documentos 01 a 05 e ser entregue em incrementos executaveis. Cada marco so e considerado concluido quando sua validacao passar.
 
@@ -15,17 +15,8 @@ A implementacao deve preservar as regras dos documentos 01 a 05 e ser entregue e
 - Operacoes financeiras sao atomicas com `@Transactional`.
 - `RENDIMENTO` e `JUROS` registram em `valor` somente o valor aplicado, sempre positivo; o saldo atualizado e retornado na resposta.
 - Taxas sao decimais entre `0` e `1`: `0.005` representa `0,5%`.
-- Nao sera criado endpoint publico para cadastrar `Usuario` nesta primeira versao. Um usuario inicial sera criado por seed/migration segura ou configuracao de bootstrap.
-- `OPERADOR` pode executar as operacoes de negocio. `ADMIN` pode executar as mesmas operacoes e administrar usuarios em uma evolucao futura; como nao existe requisito de CRUD de usuarios, nenhum endpoint adicional e necessario agora.
-- Todos os endpoints, exceto `POST /api/v1/auth/login`, exigem `Authorization: Bearer <jwt>`.
 
 ## 3. Contrato de endpoints
-
-### Autenticacao
-
-| Metodo | Endpoint | Entrada | Saida | Erros principais |
-|---|---|---|---|---|
-| POST | `/api/v1/auth/login` | `{ "username": "operador", "senha": "..." }` | `200` com `{ token, tipo: "Bearer", expiraEm }` | `400`, `401` |
 
 ### Correntistas
 
@@ -90,10 +81,12 @@ Todos os erros devem seguir o mesmo formato:
 
 **Entregas**
 
-- Criar projeto Spring Boot com Java 8+ e dependencias Web, Validation, JPA, Security, JWT, Flyway, MySQL, H2 e OpenAPI.
-- Definir pacotes conforme a arquitetura: `controller`, `service`, `database.entity`, `database.repository`, `dto`, `enums`, `security`.
+- Criar projeto Spring Boot com Java 8+ e dependencias Web, Validation, JPA, Flyway, MySQL, H2 e OpenAPI.
+- Definir pacotes conforme a arquitetura: `controller`, `service`, `database.entity`, `database.repository`, `dto`, `enums`.
 - Configurar perfis `test` e `dev`.
-- Adicionar `Dockerfile`, `docker-compose.yml`, `.gitignore` e pipeline minima de build/teste.
+- Adicionar `Dockerfile`, `docker-compose.yml` e `.gitignore`.
+- Documentar a validacao local com Maven e Docker Compose. A entrega nao depende de GitHub Actions,
+  pipelines de CI/CD ou Git Flow.
 
 **Validacao de saida**
 
@@ -106,10 +99,10 @@ Todos os erros devem seguir o mesmo formato:
 
 **Entregas**
 
-- Implementar entidades `Correntista`, `Conta`, `ContaCorrente`, `ContaPoupanca`, `Transacao` e `Usuario`.
+- Implementar entidades `Correntista`, `Conta`, `ContaCorrente`, `ContaPoupanca` e `Transacao`.
 - Aplicar heranca JPA `JOINED`.
 - Criar `V1__create_schema.sql` com chaves, FKs, uniques, decimais e enums.
-- Implementar repositories e seed do usuario inicial.
+- Implementar repositories.
 
 **Validacao de saida**
 
@@ -187,57 +180,60 @@ Todos os erros devem seguir o mesmo formato:
 - Juros em poupanca ou corrente nao negativa retorna `422` sem efeitos.
 - Testes de arredondamento confirmam escala de duas casas e politica definida.
 
-### Marco 6 — Seguranca e autorizacao
+### Marco 6 — Tratamento de erros, contrato e observabilidade
 
 **Entregas**
 
-- Implementar `SecurityConfig`, `JwtUtil`, `JwtAuthFilter`, `UserDetailsService` e BCrypt.
-- Liberar somente `POST /api/v1/auth/login`, OpenAPI e health check.
-- Proteger recursos com role `OPERADOR` ou `ADMIN`.
-- Padronizar respostas `401` e `403`.
-
-**Validacao de saida**
-
-- Login valido retorna JWT com subject, role e expiracao.
-- Senha invalida retorna `401` sem revelar qual credencial falhou.
-- Requisicao sem token retorna `401`.
-- Token expirado ou assinatura invalida retorna `401`.
-- Token valido sem permissao retorna `403`.
-- Testes confirmam que senha nunca aparece em respostas ou logs.
-
-### Marco 7 — Tratamento de erros, contrato e observabilidade
-
-**Entregas**
-
-- Implementar `GlobalExceptionHandler` para excecoes de negocio, validacao, autenticacao e acesso.
+- Implementar `GlobalExceptionHandler` para excecoes de negocio e validacao.
 - Padronizar mensagens, timestamp, status, path e erros de campo.
-- Adicionar OpenAPI/Swagger com schemas, autenticacao Bearer, exemplos e codigos de resposta.
-- Adicionar logs estruturados sem senha, token ou dados sensiveis.
+- Adicionar OpenAPI/Swagger com schemas, exemplos e codigos de resposta.
+- Adicionar logs estruturados sem dados sensiveis.
 
 **Validacao de saida**
 
 - Cada endpoint possui documentacao OpenAPI acessivel em `/swagger-ui.html` e `/v3/api-docs`.
-- Testes de contrato conferem os status `200`, `201`, `400`, `401`, `403`, `404`, `409` e `422` previstos.
+- Testes de contrato conferem os status `200`, `201`, `400`, `404`, `409` e `422` previstos.
 - Payloads de erro sao consistentes em todos os controllers.
 - Revisao manual confirma que exemplos Swagger podem ser executados na ordem de um fluxo completo.
 
-### Marco 8 — Empacotamento e aceite final
+### Marco 7 — Empacotamento e aceite final
 
 **Entregas**
 
-- Finalizar README com pre-requisitos, configuracao, migrations, Docker, autenticacao e exemplos curl.
-- Criar testes de ponta a ponta do fluxo: login -> correntista -> conta -> deposito -> saque -> extrato.
-- Executar build, testes, verificacao de migration e subida via Docker.
-- Revisar requisitos RF01-RF14 e RNF01-RNF12 com rastreabilidade.
+- Finalizar README com pre-requisitos, configuracao, migrations, Docker, exemplos curl.
+- Criar testes de ponta a ponta do fluxo: correntista -> conta -> deposito -> saque -> extrato.
+- Executar localmente o build, os testes, a verificacao de migration e a subida via Docker.
+- Revisar requisitos RF01-RF13 e RNF01-RNF11 com rastreabilidade.
 
 **Validacao de saida**
 
 - Ambiente limpo reproduz a aplicacao com `docker compose up --build`.
 - Suite unitaria, integracao e E2E passa sem testes desabilitados.
-- Fluxo principal completo funciona com JWT.
+- Fluxo principal completo funciona sem exigir credenciais.
 - Regras de corrente, poupanca, rendimento e juros possuem evidencia automatizada.
 - README permite que outra pessoa execute e consuma a API sem conhecimento adicional.
 - Checklist de aceite marca cada RF/RNF como implementado, testado ou explicitamente fora do escopo.
+
+### Validacao local obrigatoria
+
+Todos os criterios acima podem ser verificados sem pipeline remoto:
+
+```bash
+# Windows
+.\mvnw.cmd clean verify
+docker compose up --build
+```
+
+Em outro terminal, validar a aplicacao com os exemplos de requisicao documentados e,
+ao finalizar:
+
+```bash
+docker compose down
+```
+
+O resultado desses comandos, junto dos testes do projeto, e suficiente para demonstrar a
+execucao do desafio. O uso de branches, Git Flow, pull requests ou GitHub Actions e
+opcional e nao faz parte dos criterios de aceite.
 
 ## 5. Ordem recomendada de execucao
 
@@ -247,21 +243,21 @@ Todos os erros devem seguir o mesmo formato:
 4. Marco 3: correntistas e contas.
 5. Marco 4: deposito, saque e extrato.
 6. Marco 5: rendimento e juros.
-7. Marco 6: seguranca.
-8. Marco 7: erros e documentacao.
-9. Marco 8: aceite final e empacotamento.
+7. Marco 6: erros e documentacao.
+8. Marco 7: aceite final e empacotamento.
 
-Cada marco deve ser entregue em commits pequenos, com testes incluidos no mesmo incremento. O proximo marco nao deve comecar enquanto a validacao do marco anterior estiver falhando.
+Cada marco deve ser validado localmente antes do proximo. Commits incrementais podem ser
+usados para organizar o historico, mas nao sao obrigatorios para executar ou avaliar o
+desafio.
 
 ## 6. Riscos e pontos de atencao
 
 - **Concorrencia de saldo:** sem bloqueio, dois saques simultaneos podem produzir saldo incorreto. Deve ser resolvido no Marco 4 e coberto por teste.
 - **Arredondamento:** definir escala e `RoundingMode` antes dos testes de rendimento/juros; a recomendacao e `HALF_EVEN` para valores monetarios calculados.
-- **JWT e segredo:** segredo deve vir de variavel de ambiente, nunca do repositorio.
 - **Flyway e H2:** validar compatibilidade real do SQL em H2; se houver divergencia, usar migration especifica por banco sem duplicar regra de negocio.
 - **Idempotencia:** a especificacao original nao exige chave de idempotencia. Para operacoes financeiras em producao, recomenda-se adicionar `Idempotency-Key` antes de liberar clientes externos.
 - **Agendamento:** os documentos mencionam o sistema automatico, mas os endpoints definidos sao disparados por operador. Agendamento mensal automatico deve ser tratado como evolucao separada.
 
 ## 7. Criterio final de pronto
 
-A API esta pronta quando o fluxo autenticado completo passa em ambiente limpo, todas as regras RN03-RN08 possuem testes unitarios e de integracao, o schema e reproduzivel por Flyway, os erros seguem um contrato unico, a documentacao OpenAPI esta atualizada e cada requisito dos documentos de origem possui evidencia de implementacao ou justificativa de fora de escopo.
+A API esta pronta quando o fluxo principal completo passa em ambiente limpo, todas as regras RN03-RN08 possuem testes unitarios e de integracao, o schema e reproduzivel por Flyway, os erros seguem um contrato unico, a documentacao OpenAPI esta atualizada e cada requisito dos documentos de origem possui evidencia de implementacao ou justificativa de fora de escopo.
