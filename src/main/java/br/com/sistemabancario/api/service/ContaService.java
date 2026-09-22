@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import br.com.sistemabancario.api.dto.*;
 
+import br.com.sistemabancario.api.exception.RequisicaoInvalidaException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,7 @@ public class ContaService {
 
         } else if (request.getTipo() == TipoConta.POUPANCA) {
             if (request.getLimite() != null && request.getLimite().compareTo(BigDecimal.ZERO) != 0) {
-                throw new TipoContaInvalidoException("Conta poupança não possui limite.");
+                throw RequisicaoInvalidaException.limiteNaoPermitidoParaPoupanca("Limite não permitido para conta poupança");
             }
             conta = new ContaPoupanca();
 

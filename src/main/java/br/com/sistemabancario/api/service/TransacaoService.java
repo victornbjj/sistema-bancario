@@ -76,7 +76,7 @@ public class TransacaoService {
         transacaoRepository.save(transacao);
 
         return TransacaoResponse.builder()
-                .id(poupanca.getId())
+                .id(transacao.getId())
                 .tipoTransacao(transacao.getTipo())
                 .valor(transacao.getValor())
                 .data(transacao.getData())

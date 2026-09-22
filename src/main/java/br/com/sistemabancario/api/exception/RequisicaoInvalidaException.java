@@ -13,7 +13,7 @@ public class RequisicaoInvalidaException extends NegocioException {
         super(HttpStatus.BAD_REQUEST, "Requisição inválida", message);
     }
 
-     public static RequisicaoInvalidaException limiteNaoPermitidoParaPoupanca() {
+     public static RequisicaoInvalidaException limiteNaoPermitidoParaPoupanca(String s) {
         return new RequisicaoInvalidaException(
                 "Conta Poupança não aceita o campo 'limite'");
     }

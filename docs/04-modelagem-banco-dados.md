@@ -1,6 +1,8 @@
 # Modelagem do Banco de Dados
 
 > Continuação da Modelagem de Domínio (documento 03). Estratégia de herança JPA adotada: **JOINED** (`@Inheritance(strategy = InheritanceType.JOINED)`), com uma tabela base `conta` e tabelas filhas `conta_corrente` e `conta_poupanca` ligadas por FK/PK compartilhada. Migrations gerenciadas via **Flyway** em `src/main/resources/db/migration`.
+>
+> O script abaixo é idêntico ao `V1__create_schema.sql` atualmente versionado no projeto — nenhuma migration adicional foi necessária até agora, inclusive para a regra de período mínimo de 30 dias (ela é resolvida em runtime consultando `MAX(data)` em `transacao`, sem precisar de coluna nova).
 
 ## 1. Diagrama Entidade-Relacionamento (visão textual)
 
@@ -66,7 +68,7 @@ erDiagram
 | id | BIGINT | PK, AUTO_INCREMENT |
 | numero | VARCHAR(20) | NOT NULL, UNIQUE |
 | saldo | DECIMAL(15,2) | NOT NULL, default 0 |
-| tipo | VARCHAR(20) | NOT NULL (discriminador auxiliar/consulta) |
+| tipo | VARCHAR(20) | NOT NULL (usado para filtro/serialização; a subclasse real é dada pela presença da linha filha) |
 | data_abertura | DATETIME | NOT NULL, default CURRENT_TIMESTAMP |
 | correntista_id | BIGINT | NOT NULL, FK → correntista(id) |
 
@@ -89,6 +91,12 @@ erDiagram
 | valor | DECIMAL(15,2) | NOT NULL |
 | data | DATETIME | NOT NULL, default CURRENT_TIMESTAMP |
 | conta_id | BIGINT | NOT NULL, FK → conta(id) |
+
+> A busca do extrato (`GET /contas/{id}/extrato`) e a checagem de período
+> mínimo (RN13) usam apenas as colunas `conta_id`, `tipo` e `data` já
+> existentes — não precisaram de índice ou coluna adicional até este ponto.
+> Para volumes maiores de dados, vale considerar um índice composto
+> `(conta_id, tipo, data)` em `transacao`.
 
 ## 3. Script de Migration (Flyway) — `V1__create_schema.sql`
 
@@ -136,7 +144,7 @@ CREATE TABLE transacao (
 
 ## 4. Observações
 
-- `numero` da conta pode ser gerado pela aplicação (ex.: sequencial + dígito verificador) no Service, não no banco.
-- Índices únicos em `correntista.documento` e `conta.numero` já garantem RN09/RN10 a nível de banco.
-- Caso opte por **SINGLE_TABLE** em vez de JOINED (uma única tabela `conta` com coluna `limite` nula para poupança), simplifica-se a query mas perde-se a garantia de "limite não existe para poupança" a nível de schema — trade-off a citar no README.
-- Para H2 (testes), o mesmo script Flyway roda sem alteração, bastando trocar o dialect no `application-test.yml`.
+- `numero` da conta é gerado pela aplicação (`ContaService.gerarNumeroConta()`, formato numérico de 8 dígitos com verificação de unicidade via `existsByNumero`), não pelo banco.
+- Índices únicos em `correntista.documento` e `conta.numero` garantem RN10/RN09 a nível de banco.
+- **Pendência de concorrência (RNF12):** o roadmap (documento 06) recomenda bloqueio otimista (`@Version`) ou pessimista para evitar *lost update* em saques/depósitos simultâneos. Nenhuma das duas estratégias está implementada ainda — a tabela `conta` não tem coluna de versão, e o `IContaRepository` não expõe uma busca com `@Lock`. Isso deve ser adicionado antes de considerar o Marco 4 totalmente concluído.
+- Para H2 (perfil `test`), o mesmo script Flyway roda sem alteração — `application-test.properties` aponta `spring.jpa.database-platform=org.hibernate.dialect.H2Dialect` e usa o mesmo `spring.flyway.locations=classpath:db/migration`.
