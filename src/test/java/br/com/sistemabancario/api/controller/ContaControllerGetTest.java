@@ -10,7 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Arrays;
+
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,7 @@ class ContaControllerGetTest {
     @DisplayName("Deve listar contas sem filtro e retornar 200 paginado")
     void deveListarContasSemFiltro() throws Exception {
         Page<ContaResponse> pagina = new PageImpl<>(
-                List.of(contaBase(1L, TipoConta.CORRENTE, "100.00"),
+                Arrays.asList(contaBase(1L, TipoConta.CORRENTE, "100.00"),
                         contaBase(2L, TipoConta.POUPANCA, "50.00")));
 
         when(contaService.listar(isNull(), isNull(), any())).thenReturn(pagina);
@@ -94,7 +95,7 @@ class ContaControllerGetTest {
     @DisplayName("Deve listar contas filtrando por correntistaId")
     void deveListarContasPorCorrentistaId() throws Exception {
         Page<ContaResponse> pagina = new PageImpl<>(
-                List.of(contaBase(1L, TipoConta.CORRENTE, "100.00")));
+                Arrays.asList(contaBase(1L, TipoConta.CORRENTE, "100.00")));
 
         when(contaService.listar(eq(10L), isNull(), any())).thenReturn(pagina);
 
@@ -107,7 +108,7 @@ class ContaControllerGetTest {
     @DisplayName("Deve listar contas filtrando por numero")
     void deveListarContasPorNumero() throws Exception {
         Page<ContaResponse> pagina = new PageImpl<>(
-                List.of(contaBase(1L, TipoConta.CORRENTE, "100.00")));
+                Arrays.asList(contaBase(1L, TipoConta.CORRENTE, "100.00")));
 
         when(contaService.listar(isNull(), eq("00000001"), any())).thenReturn(pagina);
 
@@ -131,7 +132,7 @@ class ContaControllerGetTest {
     @Test
     @DisplayName("Deve consultar extrato sem filtros e retornar 200 paginado")
     void deveConsultarExtratoSemFiltros() throws Exception {
-        Page<ExtratoItemResponse> pagina = new PageImpl<>(List.of(
+        Page<ExtratoItemResponse> pagina = new PageImpl<>(Arrays.asList(
                 ExtratoItemResponse.builder()
                         .id(1L).tipo(TipoTransacao.DEPOSITO)
                         .valor(new BigDecimal("100.00"))
@@ -154,7 +155,7 @@ class ContaControllerGetTest {
     @Test
     @DisplayName("Deve consultar extrato filtrando por tipo e periodo")
     void deveConsultarExtratoComFiltros() throws Exception {
-        Page<ExtratoItemResponse> pagina = new PageImpl<>(List.of(
+        Page<ExtratoItemResponse> pagina = new PageImpl<>(Arrays.asList(
                 ExtratoItemResponse.builder()
                         .id(2L).tipo(TipoTransacao.SAQUE)
                         .valor(new BigDecimal("30.00"))

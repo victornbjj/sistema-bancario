@@ -2,6 +2,7 @@ package br.com.sistemabancario.api.controller;
 
 import br.com.sistemabancario.api.dto.CorrentistaResponse;
 import br.com.sistemabancario.api.exception.RegistroDuplicadoException;
+import br.com.sistemabancario.api.service.ContaService;
 import br.com.sistemabancario.api.service.CorrentistaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ class CorrentistaControllerTest {
 
     @MockBean
     private CorrentistaService service;
+    @MockBean
+    private ContaService contaService;
 
     @Test
     void deveCadastrarCorrentistaERetornarLocation() throws Exception {

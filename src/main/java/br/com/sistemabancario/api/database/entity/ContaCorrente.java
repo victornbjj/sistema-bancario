@@ -54,8 +54,8 @@ public class ContaCorrente extends ContaEntity{
 
     @Override
     public TransacaoEntity depositar(BigDecimal valor) {
-       if(valor == null || valor.compareTo(BigDecimal.ZERO) < 0){
-        throw new ValorInvalidoException("Valor depositado não deve ser nullo ouser menor que zero");
+       if(valor == null || valor.compareTo(BigDecimal.ZERO) <= 0){
+        throw new ValorInvalidoException("Valor depositado não deve ser nullo ou ser menor que zero");
        }
        
        this.adicionarValor(valor);
