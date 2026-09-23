@@ -250,10 +250,6 @@ campo inválido.
 | `409` | Documento, e-mail ou telefone já cadastrados |
 | `422` | Saldo/limite insuficiente para saque; tipo de conta incompatível com rendimento/juros; período mínimo de 30 dias não cumprido |
 
-> Nota: hoje, poupança com `limite` informado na criação da conta retorna
-> `422` em vez do `400` esperado pelo contrato — bug conhecido, detalhado em
-> [`docs/05-arquitetura-sistema.md`](./docs/05-arquitetura-sistema.md).
-
 ## Testes
 
 ```bash
@@ -283,7 +279,5 @@ Cobertura atual:
   operações concorrentes na mesma conta (ver documento 04 e 06).
 - Sem anotações OpenAPI customizadas — o Swagger gerado é o default da
   introspecção do Spring, sem descrições de negócio.
-- `POST /contas` retorna `422` em vez de `400` quando uma conta poupança
-  recebe `limite` diferente de zero (bug pendente de correção).
 - Sem chave de idempotência nas operações financeiras — reenviar a mesma
   requisição de depósito/saque duas vezes gera duas transações.
