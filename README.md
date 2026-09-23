@@ -4,7 +4,7 @@ API REST para gerenciamento de correntistas, contas (corrente e poupança) e
 movimentações financeiras (depósito, saque, rendimento e juros) de uma
 cooperativa de crédito, desenvolvida em Java 8 / Spring Boot 2.7.
 
-Documentação de requisitos, casos de uso, modelagem e roadmap completos estão
+Documentação de requisitos, casos de uso, modelagem estão
 em [`docs/`](./docs). Este README cobre como rodar o projeto, os endpoints
 disponíveis e como testar.
 
